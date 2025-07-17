@@ -5,15 +5,9 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Date;
-
-@Value
 @Builder
+@Value
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserUpdatedRequest {
-  String password;
-  String firstName;
-  String lastName;
-  String email;
-  Date dob;
+public class IntrospectRequest {
+    String token;
 }

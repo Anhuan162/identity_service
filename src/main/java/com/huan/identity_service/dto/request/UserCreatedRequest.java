@@ -1,60 +1,36 @@
 package com.huan.identity_service.dto.request;
 
+import com.huan.identity_service.entity.User;
+import jakarta.validation.constraints.Size;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
 import java.util.Date;
+import java.util.UUID;
 
+@Value
+@AllArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserCreatedRequest {
-    private String username;
-    private String password;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private Date dob;
+    @Size(min = 4, message = "USERNAME_INVALID")
+    String username;
+    @Size(min = 8, message = "PASSWORD_INVALID")
+    String password;
+    String firstName;
+    String lastName;
+    String email;
+    Date dob;
 
-    public String getUsername() {
-        return username;
+    public User toUser() {
+        return User.builder()
+                .username(username)
+                .password(password)
+                .firstName(firstName)
+                .lastName(lastName)
+                .email(email)
+                .dob(dob)
+                .build();
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public Date getDob() {
-        return dob;
-    }
-
-    public void setDob(Date dob) {
-        this.dob = dob;
-    }
 }
