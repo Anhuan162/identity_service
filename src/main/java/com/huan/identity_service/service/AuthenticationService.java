@@ -12,15 +12,14 @@ import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
-
+import com.nimbusds.jwt.SignedJWT;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-
-import com.nimbusds.jwt.SignedJWT;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.log4j.Log4j2;
@@ -35,9 +34,10 @@ import org.springframework.stereotype.Service;
 public class AuthenticationService {
 
   UserRepository userRepository;
+
   @NonFinal
-  protected static final String SIGNED_KEY =
-      "EZlMr8WycQGUTx8N3Fra8NZXY33tDbCOXv40rJ2DCAsMYDlOfP7s46+/E6ksRIeD";
+  @Value("${jwt.signerKey}")
+  protected String SIGNER_KEY;
 
   public AuthenticationResponse authenticate(AuthenticationRequest request) {
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -68,7 +68,7 @@ public class AuthenticationService {
     JWSObject jsonObject = new JWSObject(header, payload);
 
     try {
-      jsonObject.sign(new MACSigner(SIGNED_KEY.getBytes()));
+      jsonObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
       return jsonObject.serialize();
     } catch (JOSEException e) {
       log.error("Can not create exception");
@@ -76,15 +76,16 @@ public class AuthenticationService {
     }
   }
 
-    public IntrospectResponse introspect(IntrospectRequest introspectRequest) throws JOSEException, ParseException {
-      var token = introspectRequest.getToken();
+  public IntrospectResponse introspect(IntrospectRequest introspectRequest)
+      throws JOSEException, ParseException {
+    var token = introspectRequest.getToken();
 
-      JWSVerifier verifier = new MACVerifier(SIGNED_KEY);
-      SignedJWT signedJWT = SignedJWT.parse(token);
+    JWSVerifier verifier = new MACVerifier(SIGNER_KEY);
+    SignedJWT signedJWT = SignedJWT.parse(token);
 
-      Date experationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
-      var verified = signedJWT.verify(verifier);
+    Date experationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+    var verified = signedJWT.verify(verifier);
 
-      return IntrospectResponse.builder().valid(verified && experationTime.after(new Date())).build();
+    return IntrospectResponse.builder().valid(verified && experationTime.after(new Date())).build();
   }
 }
