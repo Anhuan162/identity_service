@@ -1,11 +1,10 @@
 package com.huan.identity_service.dto.request;
 
+import java.util.Date;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Value;
 import lombok.experimental.FieldDefaults;
-
-import java.util.Date;
 
 @Value
 @Builder

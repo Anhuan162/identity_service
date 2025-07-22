@@ -2,6 +2,7 @@ package com.huan.identity_service.controller;
 
 import com.huan.identity_service.dto.request.UserCreatedRequest;
 import com.huan.identity_service.dto.request.UserUpdatedRequest;
+import com.huan.identity_service.dto.response.UserResponse;
 import com.huan.identity_service.entity.User;
 import com.huan.identity_service.exception.ApiResponse;
 import com.huan.identity_service.service.UserService;
@@ -28,8 +29,8 @@ public class UserController {
   }
 
   @GetMapping
-  List<User> getUsers() {
-    return userService.getUsers();
+  ApiResponse<List<UserResponse>> getUsers() {
+    return ApiResponse.<List<UserResponse>>builder().result(userService.getUsers()).build();
   }
 
   @PutMapping("{id}")
